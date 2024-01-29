@@ -8,7 +8,8 @@ import uuid
 from dynamo import DatabaseAccess
 
 print('Loading function')
-key_size = os.environ['KEY_SIZE'] if 'KEY_SIZE' in os.environ else 10
+key_size = os.environ['KEY_SIZE'] if 'KEY_SIZE' in os.environ else '10'
+key_size = int(key_size)
 base_url = os.environ['BASE_URL'] if 'BASE_URL' in os.environ else 'https://example.com/'
 random_base = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
@@ -43,11 +44,24 @@ def generate_short_url(long_url):
 
     db_access.put_data({
         'id': uuid.uuid4().hex,
+        'random_key': random_key,
         'long_url': long_url,
         'short_url': short_url,
         'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
     return short_url
+
+
+def check_key_exist(random_key):
+    items = db_access.get_data()
+    for item in items:
+        if item['random_key'] == random_key:
+            return True
+    return False
+
+
+def count_short_url():
+    return db_access.get_count()
 
 
 # Handler
@@ -60,5 +74,6 @@ def lambda_handler(event, context):
     long_url = event.get("long_url")
     print("Long url: " + long_url)
     short_url = generate_short_url(long_url)
-    # save_url(short_url, long_url)
+    counts = count_short_url()
+    print("Counts: " + str(counts))
     return respond(None, short_url)

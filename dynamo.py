@@ -18,8 +18,12 @@ class DatabaseAccess:
     def get_data(self):
         res = self.table.scan()
         items = res['Items']  # 모든 item
+        return items
+
+    def get_count(self):
+        res = self.table.scan()
         count = res['Count']  # item 개수
-        return items, count
+        return count
 
     def put_data(self, input_data):
         try:
