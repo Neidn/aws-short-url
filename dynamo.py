@@ -15,15 +15,35 @@ class DatabaseAccess:
         self.table_name = lambda_dynamodb_resource['table_name']
         self.table = self.dynamodb.Table(self.table_name)
 
-    def get_data(self):
+    def get_all_data(self):
         res = self.table.scan()
         items = res['Items']  # 모든 item
         return items
 
-    def get_count(self):
+    def get_all_counts(self):
         res = self.table.scan()
         count = res['Count']  # item 개수
         return count
+
+    def get_random_key_data(self, key):
+        res = self.table.get_item(
+            Key={
+                'random_key': key
+            }
+        )
+        item = res['Item']
+        count = res['Count']
+        return item, count
+
+    def get_long_url_data(self, long_url):
+        res = self.table.get_item(
+            Key={
+                'long_url': long_url
+            }
+        )
+        item = res['Item']
+        count = res['Count']
+        return item, count
 
     def put_data(self, input_data):
         try:
