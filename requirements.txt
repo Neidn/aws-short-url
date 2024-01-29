@@ -1,0 +1,10 @@
+# Lambda dependencies
+boto3
+
+# Testing dependencies
+pynose
+pinocchio
+factory-boy
+
+# Code Coverage
+coverage
