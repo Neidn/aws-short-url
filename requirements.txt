@@ -8,3 +8,6 @@ factory-boy
 
 # Code Coverage
 coverage
+
+# Environment variables
+python-dotenv

@@ -2,20 +2,22 @@ import json
 import os
 import random
 import string
+import datetime
+import uuid
 
-import boto3
+from dynamo import DatabaseAccess
 
 print('Loading function')
-dynamo = boto3.client('dynamodb')
-resource = boto3.resource('dynamodb')
-key_size = os.environ['KEY_SIZE'] if 'KEY_SIZE' in os.environ else 7
+key_size = os.environ['KEY_SIZE'] if 'KEY_SIZE' in os.environ else 10
 base_url = os.environ['BASE_URL'] if 'BASE_URL' in os.environ else 'https://example.com/'
 random_base = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
 _LAMBDA_DYNAMODB_RESOURCE = {
-    "resource": resource,
+    "db": 'dynamodb',
     "table_name": os.environ.get("DYNAMODB_TABLE_NAME", "NONE"),
 }
+
+db_access = DatabaseAccess(_LAMBDA_DYNAMODB_RESOURCE)
 
 
 # response
@@ -38,6 +40,13 @@ def generate_short_url(long_url):
     print('Random key: ' + random_key)
     short_url = base_url + random_key
     print('Short url: ' + short_url)
+
+    db_access.put_data({
+        'id': uuid.uuid4().hex,
+        'long_url': long_url,
+        'short_url': short_url,
+        'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
     return short_url
 
 
